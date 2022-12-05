@@ -1,0 +1,651 @@
+﻿@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
+
+@model Smart_E.Models.MyStudent.MyStudentsProgressViewModel
+@inject UserManager<ApplicationUser> UserManager 
+
+@{
+    ViewBag.Title = "My Child's Subject Progress";
+    Layout = "_Layout";
+
+    var user = await UserManager.GetUserAsync(User);
+
+
+}
+
+@inject IOptions<RequestLocalizationOptions> LocOptions
+
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+
+    var cultureItems = LocOptions.Value.SupportedUICultures
+        .Select(c => new SelectListItem {Value = c.Name, Text = c.DisplayName})
+        .ToList();
+    var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}";
+}
+
+@inject IViewLocalizer _localizer
+
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+    <link href="~/assets/libs/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="~/assets/libs/footable/css/footable.core.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/select2/dist/css/select2.min.css">
+    <link href="~/assets/libs/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css"/>
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
+</head>
+
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+</style>
+<body>
+
+<div class="preloader">
+    <div class="lds-ripple">
+        <div class="lds-pos"></div>
+        <div class="lds-pos"></div>
+    </div>
+</div>
+
+<div class="page-breadcrumb">
+    <div class="row">
+        <div class="col-5 align-self-center">
+            <h4 class="page-title">@_localizer["MY CHILD'S PROGRESS IN THIS SUBJECT"]</h4>
+            <div class="d-flex align-items-center">
+            </div>
+        </div>
+        <div class="col-7 align-self-center">
+            <div class="d-flex no-block justify-content-end align-items-center">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a asp-controller="MyChild" asp-action="MyChild" >@_localizer["My Children"]</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">@_localizer["My child's progress in this subject"]</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+                
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-2 col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row p-t-10 p-b-10">
+                        <!-- Column -->
+                        <div class="col p-r-0">
+                            <h3 class="font-light">
+                                <a id="courseId" href="javascript:goToSubject();">@Model.CourseName</a>
+                            </h3>
+                            <h6 class="text-muted">Subject</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row p-t-10 p-b-10">
+                        <div class="col p-r-0">
+                            <h3 id="" class="font-light">
+                                <a id="studentId">@Model.Name</a>
+                            </h3>
+                            <h6 class="text-muted">Child's Name</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row p-t-10 p-b-10">
+                        <!-- Column -->
+                        <div class="col p-r-0">
+                            <h3 class="font-light">
+                                <a id="aPolicyName" href="javascript:showTeacherNameModal(); "style="color: blue">@Model.TeacherName</a>
+                            </h3>
+                            <h6 class="text-muted">Teacher's Name</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row p-t-10 p-b-10">
+                        <div class="col p-r-0">
+                            <h3 class="font-light">@Model.Grade</h3>
+                            <h6 class="text-muted">Grade</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row p-t-10 p-b-10">
+                        <div class="col p-r-0">
+                            <h3 class="font-light">@Model.NumberOfClassesAttended</h3>
+                            <h6 class="text-muted">Classes attended</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">    </div>
+    <div class="col-lg-12">
+        <ul class="nav nav-pills custom-pills" id="pills-tab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="pills-timeline-tab" data-toggle="pill" href="#information" role="tab" aria-controls="pills-timeline" aria-selected="true"  style="background-color:white">Assignments Feedback</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pills-outstanding-tab" data-toggle="pill" href="#outstandingAssignments" role="tab" aria-controls="pills-timeline" aria-selected="false"  style="background-color:white">Outstanding Assignments</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pills-summary-tab" data-toggle="pill" href="#summaryTab" role="tab" aria-controls="pills-setting" aria-selected="false" style="background-color:white">Assignments Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pills-attendance-tab" data-toggle="pill" href="#attendanceTab" role="tab" aria-controls="pills-setting" aria-selected="false" style="background-color:white">Attendance Record</a>
+            </li>
+        
+        </ul>   
+        <!-- Tabs -->
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="information" role="tabpanel" aria-labelledby="pills-timeline-tab">
+                <div class="table-responsive">
+                    <table id="tblChildMarksForAssignments" class="table table-striped" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>@_localizer["Date"]</th>
+                            <th>@_localizer["Assignment Name"]</th>
+                            <th>@_localizer["Mark Obtained"]</th>
+                            <th>@_localizer["Assignment Mark"]</th>
+                            <th>@_localizer["Percentage"]</th>
+                            <th>@_localizer["Outcome"]</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                      
+                              
+                        <tfoot>
+                        <tr>
+                            <th>@_localizer["Date"]</th>
+                            <th>@_localizer["Assignment Name"]</th>
+                            <th>@_localizer["Mark Obtained"]</th>
+                            <th>@_localizer["Assignment Mark"]</th>
+                            <th>@_localizer["Percentage"]</th>
+                            <th>@_localizer["Outcome"]</th>
+
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="outstandingAssignments" role="tabpanel" aria-labelledby="pills-outstanding-tab">
+                <div class="table-responsive">
+                    <table id="tblChildMarksForOutstandingAssignments" class="table table-striped" style="width:100%">
+                        <thead>
+                        <tr>
+                            <th>@_localizer["Date "]</th>
+                            <th>@_localizer["Assignment Name"]</th>
+                            <th>@_localizer["Mark Obtained"]</th>
+                            <th>@_localizer["Outcome"]</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                      
+                              
+                        <tfoot>
+                        <tr>
+                            <th>@_localizer["Date"]</th>
+                            <th>@_localizer["Assignment Name"]</th>
+                            <th>@_localizer["Mark Obtained"]</th>
+                            <th>@_localizer["Outcome"]</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="summaryTab" role="tabpanel" aria-labelledby="pills-summary-tab">
+                <div class="row">
+                <button onclick="window.print()" style="margin-left: 5px;" class="btn btn-sm btn-outline-danger float-lg-right"><i class="fas fa-print"><span> Print Progress</span></i></button>
+                    <div class="row"></div>
+                </div>
+                @if (@Model.YearMark < 49 && @Model.WeightTotal == 100)
+                {
+                    <div id="divBanner">
+                        <div class="alert alert-danger pt-3" role="alert">
+                            <h4 class="alert-heading">Important!</h4>
+                            <p>Your child has not passed.</p>
+                        </div>
+                    </div>
+                }
+                @if (@Model.YearMark > 50 && @Model.WeightTotal == 100)
+                {
+                    <div id="divBanner">
+                        <div class="alert alert-success pt-3" role="alert">
+                            <h4 class="alert-heading">Congratulations!</h4>
+                            <p>Your child has passed this subject!</p>
+
+                        </div>
+                    </div>
+                }
+                @if (@Model.YearMark > 50 && @Model.WeightTotal != 100)
+                {
+                    <div id="divBanner">
+                        <div class="alert alert-warning pt-3" role="alert">
+                            <h4 class="alert-heading">The year is not over!</h4>
+                            <p>Your child has not finished, yet.</p>
+                            <p>'Do the best you can until you know better' - Maya Angelo</p>
+
+                        </div>
+                    </div>
+                }
+                @if (@Model.WeightTotal != 100)
+                {
+                    <div id="divBanner">
+                        <div class="alert alert-warning pt-3" role="alert">
+                            <h4 class="alert-heading">Incorrect weight marks</h4>
+                            <p>Please contact the teacher to fix this issue</p>
+
+                        </div>
+                    </div>
+                }
+                <div class="table-responsive">
+                    <table id="tblChildMarksForAssignmentSummary" class="table table-striped" style="width: 100%">
+                        <thead>
+                        <tr>
+                            <th>@_localizer["Date"]</th>
+                            <th>@_localizer["Assignment Name"]</th>
+                            <th>@_localizer["Weight Percentage"]</th>
+                            <th>@_localizer["% Contribution to Year Mark"]</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+
+                        <tfoot>
+                        <tr>
+                            <th>@_localizer["Date"]</th>
+                            <th>@_localizer["Assignment Name"]</th>
+                            <th>@_localizer["Weight Percentage"]</th>
+                            <th>@_localizer["% Contribution to Year Mark"]</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="row"></div>
+                <div class="table-responsive">
+                    <table id="tblCurrentYearMark" class="table table-striped" style="width: 100%">
+                        <tbody>
+                        <tr>
+                            <td><h5><u><b>Current Year Mark</b></u></h5></td>
+                            <td><h5><u><b>@Model.YearMark %</b></u></h5></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+               
+
+            </div>
+
+            <div class="tab-pane fade" id="attendanceTab" role="tabpanel" aria-labelledby="pills-attendance-tab">
+                <div class="col-sm-12 col-lg-4" id="user-widget">
+                    <div class="card" style="height: 450px; max-height: 450px;">
+                        <div class="card-body">
+                            <div id="user-widget-graph" style="height: 253px; width: 100%;" class="m-t-20"></div>
+                            <!-- row -->
+                            <div class="row m-t-30 m-b-15">
+                                <!-- column -->
+                                <div class="col-4 birder-right text-left">
+                                    <h4 class="m-b-0">
+                                        @Model.NumberOfClassesAttended
+                                        <small>
+                                            <i class="fas fa-check text-success"></i>
+                                        </small>
+                                    </h4>Classes Attended
+                                </div>
+                                <!-- column -->
+                                <div class="col-4 birder-right text-center">
+                                    <h4 class="m-b-0">
+                                        @Model.NumberOfClassesNotAttended
+                                        <small>
+                                            <i class="fas fa-times text-danger"></i>
+                                        </small>
+                                    </h4>Classes Not attended
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="showTeacherNameModal" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Message Teacher</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label class="text-right control-label" >Teacher Name</label>
+                        <input autocomplete="off" required="required" class="form-control" type="text" value="@Model.TeacherName" readonly="readonly"/>
+                    </div>
+                    <div class="form-group row">
+                        <label class="text-right control-label" >Email</label>
+                        <input autocomplete="off" required="required" class="form-control" type="text" value="@Model.TeacherEmail" readonly="readonly"/>
+                    </div>
+                    <div class="form-group row">
+                        <textarea type="text" class="form-control" id="txtMessage" rows="20" placeholder="Your Message..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-info waves-effect float-lg-right" data-dismiss="modal">Cancel</button>
+                <button type="button" id="btnUpdatePolicyName" onclick="javascript:sendMessage();" class="btn btn-outline-success waves-effect waves-light float-lg-right">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+<div>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker-custom.js"></script>
+    <script src="~/assets/extra-libs/DataTables/datatables.min.js"></script>
+    <script src="~/dist/js/pages/datatable/datatable-basic.init.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.min.js"></script>
+    <script src="~/dist/js/pages/forms/select2/select2.init.js"></script>
+    <script src="~/assets/libs/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="~/assets/libs/sweetalert2/sweet-alert.init.js"></script>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="~/assets/extra-libs/c3/d3.min.js"></script>
+    <script src="~/assets/extra-libs/c3/c3.min.js"></script>
+
+</div>
+
+
+<script>
+    function goToSubject(){
+        window.location.href = '@Url.Action("CourseDetails","Courses")?id=@Model.CourseId';
+    
+    }
+    function sendMessage(){
+        var model = {
+            message: $('#txtMessage').val()
+        };
+        $.ajax({
+            url: `@Url.Action("MessageTeacherFromParent", "MyChild")?teacherId=@Model.TeacherId`,
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify(model),
+            contentType: "application/json; charset=utf-8",
+            success: function(result) {
+                $('#showTeacherNameModal').modal('hide');
+
+                toastr.success('Message Sending', 'Successful!');
+
+            },
+            error: function(jqXHR, exception) {
+                swal({
+                    title: "ERROR STATUS " + jqXHR.status,
+                    text: "Error Message: " + jqXHR.responseText,
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "OK"
+                });
+            }
+        });
+    
+    
+    }
+        
+    function showTeacherNameModal(){
+        $('#showTeacherNameModal').modal('show');    
+    }
+
+    $(document).ready(function() {
+        loadMyChildsAssignments();
+        loadMyChildsOutstandingAssignments();
+        loadMyChildsAssignmentSummary();
+        loadMyChildYearMark();
+    });
+
+    var tblChildMarksForAssignments = $('#tblChildMarksForAssignments').DataTable({
+        createdRow: function(row, data, dataIndex) {
+            $(row).attr('id', data.id);
+        },
+        "columns": [
+            { "data": "date" },
+            { "data": "assignmentName" },
+            { "data": "newMark"},
+            { "data": "assignmentMark" },
+            { "data": "percentage" },
+            { "data": "outcome" }
+
+        ]
+    });
+    
+    var tblChildMarksForAssignmentSummary = $('#tblChildMarksForAssignmentSummary').DataTable({
+        createdRow: function(row, data, dataIndex) {
+            $(row).attr('id', data.id);
+        },
+        "columns": [
+            { "data": "date" },
+            { "data": "assignmentName" },
+            { "data": "weight" },
+            { "data": "weightMark" }
+
+        ]
+    });
+     var tblChildMarksForOutstandingAssignments = $('#tblChildMarksForOutstandingAssignments').DataTable({
+        createdRow: function(row, data, dataIndex) {
+            $(row).attr('id', data.id);
+        },
+        "columns": [
+             { "data": "date" },
+            { "data": "assignmentName" },
+            {"data": "mark" },
+            { "data": "outcome" }
+
+        ]
+    });
+  
+    function loadMyChildsOutstandingAssignments(){
+    
+    $.ajax({
+            url: `@Url.Action("GetAllMyChildsOutstandingAssignment", "Assignments")?studentId=@Model.Id&courseId=@Model.CourseId`,
+            type: 'GET',
+            success: function(result) {
+
+                var rows = [];
+
+                for (var i = 0; i < result.length; i++) {
+
+                    rows.push({
+                        id: result[i].id,
+                        assignmentName: result[i].assignmentName,
+                        date: result[i].date,
+                        mark:result[i].newMark,
+                        outcome: result[i].outcome                                
+
+                    });                 
+                }
+
+                tblChildMarksForOutstandingAssignments.rows.add(rows).draw();
+                
+             
+
+            },
+            error: function(jqXHR, exception) {
+                swal({
+                    title: "ERROR STATUS " + jqXHR.status,
+                    text: "Error Message: " + jqXHR.responseText,
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "OK"
+                });
+            }
+        });   
+    
+    }
+
+     function loadMyChildsAssignmentSummary() {
+        $.ajax({
+            url: `@Url.Action("GetAllMyChildsAssignment", "Assignments")?studentId=@Model.Id&courseId=@Model.CourseId`,
+            type: 'GET',
+            success: function(result) {
+
+                var rows = [];
+
+                for (var i = 0; i < result.length; i++) {
+
+                    rows.push({
+                        id: result[i].id,
+                        date: result[i].date,
+                        assignmentName: result[i].assignmentName,
+                        weight: result[i].weight  + "%"  ,
+                        weightMark: result[i].weightMark  + "%"             
+
+                    });                 
+                }
+
+                tblChildMarksForAssignmentSummary.rows.add(rows).draw();
+                
+             
+
+            },
+            error: function(jqXHR, exception) {
+                swal({
+                    title: "ERROR STATUS " + jqXHR.status,
+                    text: "Error Message: " + jqXHR.responseText,
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "OK"
+                });
+            }
+        });
+    }
+
+   
+    function loadMyChildsAssignments() {
+        $.ajax({
+            url: `@Url.Action("GetAllMyChildsAssignment", "Assignments")?studentId=@Model.Id&courseId=@Model.CourseId`,
+            type: 'GET',
+            success: function(result) {
+
+                var rows = [];
+
+                for (var i = 0; i < result.length; i++) {
+
+                    rows.push({
+                        id: result[i].id,
+                        date: result[i].date,
+                        assignmentName: result[i].assignmentName,
+                        assignmentMark: result[i].assignmentMark,
+                        newMark:result[i].newMark,
+                        percentage: result[i].percentage,
+                        outcome: result[i].outcome
+
+                    });                  
+
+                }
+
+                tblChildMarksForAssignments.rows.add(rows).draw();
+                             
+
+            },
+            error: function(jqXHR, exception) {
+                swal({
+                    title: "ERROR STATUS " + jqXHR.status,
+                    text: "Error Message: " + jqXHR.responseText,
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "OK"
+                });
+            }
+        });
+    }
+    $(function () {
+
+
+
+        var chart = c3.generate({
+            bindto: '#user-widget-graph',
+            data: {
+                columns: [['Classes Attended', @Model.NumberOfClassesAttended], ['Classes not attended', @Model.NumberOfClassesNotAttended]],
+                @*columns: [['Active Users', @Model.], ['Inactive Users', @Model.InactiveUsers], ['Locked Users', @Model.LockedUsers]],*@
+                type: 'donut',
+                onclick: function (d, i) {
+                },
+                onmouseover: function (d, i) {
+                },
+                onmouseout: function (d, i) {
+
+                }
+            },
+            donut: {
+                label: {
+                    show: false
+                },
+                title: 'Attendance',
+                width: 25
+            },
+
+            legend: {
+                hide: true
+
+            },
+            color: {
+                pattern: ['#4798e8', '#ff7676', '#f6f6f6']
+            }
+        });
+
+    });
+
+
+    
+</script>
+
+

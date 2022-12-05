@@ -1,0 +1,197 @@
+﻿using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Identity
+
+
+@inject IViewLocalizer _localizer
+@inject UserManager<ApplicationUser> _userManager
+
+@{
+    ViewBag.Title = "Subject";
+    Layout = "_Layout";
+    var isAdmin = await _userManager.GetUserAsync(User);
+
+};
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+    <link href="~/assets/libs/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="~/assets/libs/footable/css/footable.core.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/select2/dist/css/select2.min.css">
+    <link href="~/assets/libs/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="ie-edge" />
+    <link rel="stylesheet" href="" />
+    <script>
+        src = "main.js" deferred >
+    </script>
+
+
+
+</head>
+<body>
+    <div class="container-fluid" style="background-color: #2f3d54">
+        <div class="col-5 align-self-center">
+            <h1 class="page-title" style="color:#36dae4">@_localizer["Welcome!"]</h1>
+        </div>
+        <br />
+        <p style="color: white">
+            This subject is designed for students who are not proficient in the requisite skills needed for successful completion of Algebra I or Geometry. Students who are not performing at the identified level on norm-referenced tests, the state mathematics assessments from 7th and 8th grade and their previous Subjectwork will be invited to take this Subject. The subject will focus on teaching strategies that enhance a student‘s ability to find success within a high school mathematics class.
+        </p>
+        <br />
+        <button style="margin: 10px" type="button" @(await _userManager.IsInRoleAsync(isAdmin, "Teacher") ? "" : "hidden=\"hidden\"") class="btn btn-sm btn-outline-info waves-effect waves-light align-content-end float-lg-right"><a asp-controller="subject" asp-action="CreateChapter" asp-route-guid="">New Chapter</a></button>
+        <button style="margin: 10px" type="button" @(await _userManager.IsInRoleAsync(isAdmin, "Teacher") ? "" : "hidden=\"hidden\"") class="btn btn-sm btn-outline-info waves-effect waves-light align-content-end float-lg-right"><a asp-controller="Subject" asp-action="addAssessment">Add Assessment</a></button>
+        <button style="margin: 10px" type="button" @(await _userManager.IsInRoleAsync(isAdmin, "Student") ? "" : "hidden=\"hidden\"") class="btn btn-sm btn-outline-info waves-effect waves-light align-content-end float-lg-right"><a asp-controller="subject" asp-action="CreateChapter" asp-route-guid="">New Chapter</a></button>
+        <button style="margin: 10px" type="button" @(await _userManager.IsInRoleAsync(isAdmin, "Student") ? "" : "hidden=\"hidden\"") class="btn btn-sm btn-outline-info waves-effect waves-light align-content-end float-lg-right"><a asp-controller="Subject" asp-action="addAssessment">View Assessment</a></button>
+        <br />
+        <br />
+
+        @if (Model != null)
+        {
+            @foreach (var item in Model.chapters)
+            {
+
+                <div class="accordion" style="background-color:white">
+                    <div class="accordion-item">
+                        <div class="accordion-item-header">
+                            <label>@item.ChapterName - @item.Date</label>
+                        </div>
+                        <div class="accordion-item-body">
+                            <div class="accordion-item-body-content">
+
+
+                                <label>@item.Description</label>
+
+
+
+                            </div>
+                            <div class="row">
+                                <button type="button" style="margin: 10px; background-color: #2f3d54;" class="btn btn-outline-danger waves-effect   align-content-end float-lg-right"><a asp-controller="Subjects" asp-action="EditChapter" asp-route-id="">Edit Chapter</a></button>
+                                <button type="button" style="margin: 10px; background-color: #2f3d54;" class="btn btn-sm btn-outline-info waves-effect  align-content-end float-lg-right"><a asp-controller="Subjects" asp-action="UploadAttachment" asp-route-id="">Add Document</a></button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+        }
+
+
+    </div>
+</body>
+
+<div>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker-custom.js"></script>
+    <script src="~/assets/extra-libs/DataTables/datatables.min.js"></script>
+    <script src="~/dist/js/pages/datatable/datatable-basic.init.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.min.js"></script>
+    <script src="~/dist/js/pages/forms/select2/select2.init.js"></script>
+    <script src="~/assets/libs/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="~/assets/libs/sweetalert2/sweet-alert.init.js"></script>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+
+
+</div>
+
+
+<script>
+    const accordionItemHeaders = document.querySelectorAll(".accordion-item-header");
+    accordionItemHeaders.forEach(accordionItemHeader => {
+        accordionItemHeader.addEventListener("click", event => {
+            const currentlyActiveAccordionItemHeader = document.querySelector(".accordion-item-header.active");
+
+            if (currentlyActiveAccordionItemHeader && currentlyActiveAccordionItemHeader !== accordionItemHeaders) {
+                currentlyActiveAccordionItemHeader.classList.toggle("active");
+                currentlyActiveAccordionItemHeader.nextElementSibling.style.maxHeight = 0;
+            }
+
+            accordionItemHeader.classList.toggle("active");
+            const accordingItembody = accordionItemHeader.nextElementSibling;
+            if (accordionItemHeader.classList.contains("active")) {
+                accordingItembody.style.maxHeight = accordingItembody.scrollHeight + "px";
+            }
+            else {
+                accordingItembody.style.maxHeight = 0;
+            }
+        });
+    });
+
+
+</script>
+
+<style>
+
+    .h1 {
+        text-align: center;
+    }
+
+    .accordion {
+        width: 90%;
+        max-width: 1000px;
+        margin: 2rem auto;
+    }
+
+    .accordion-item {
+        backround-color: lightblue;
+        margin: 1rem 0;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 5px 0 rgba(0,0,0,0.25);
+    }
+
+    .accordion-item-header {
+        padding: 0.5rem 3rem 0.5rem 1rem;
+        min-hight: 3.5rem;
+        line-height: 1.25rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        position: relative;
+        cusor: pointer;
+    }
+
+        .accordion-item-header::after {
+            content: "\002B";
+            font-size: 2rem;
+            position: absolute;
+            right: 1rem;
+        }
+
+        .accordion-item-header.active::after {
+            content: "\2212";
+            transform: rotate(-180deg);
+        }
+
+    .accordion-item-body {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.2s ease-out;
+    }
+
+    .accordion-item-body-content {
+        padding: 1rem;
+        line-height: 1.5rem;
+        border-top: 3px solid #34495e;
+    }
+
+    aq
+    .accordion-item-header.active + .accordion-item-body {
+        max-height: 500px;
+    }
+
+    .button {
+        float: right;
+        margin-right: 50px;
+    }
+</style>
+</html>

@@ -1,0 +1,58 @@
+﻿@model IEnumerable<Smart_E.Models.ApplicationUser>
+<form method="get" asp-action="Admin" asp-controller="Home">
+    <p>
+        <input type="search" placeholder="Enter User Name or Email..." value="@ViewData["Details"]" name ="search" style="width:500px;"/>
+        <input type="submit" value="Search" class="btn btn-info"/> | 
+        <a asp-action="Admin" asp-controller="Home">Get All Users</a>
+    </p>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Role)*@
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+@*            <th><a onclick="showInPopup('@Url.Action("AddOrEditUser","Admin", null, Context.Request.Scheme)','New User')" class="btn btn-success text-white"><i class="fas fa-plus">New User</i></a></th>
+*@        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName) 
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName) 
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+              @*  @Html.DisplayFor(modelItem => item.Role)*@
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                <a onclick="showInPopup('@Url.Action("AddOrEditUser","Admin", new{id = item.Id}, Context.Request.Scheme)','Update User')" class="btn btn-warning text-white"><i class="fas fa-person">Manage</i></a> |
+                <form asp-action="Delete" asp-route-id="@item.Id" onsubmit="return jQueryAjaxDelete(this);" class="d-inline">
+                    <input type="submit" value="Delete" class="btn btn-danger"/>
+                </form>
+                
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

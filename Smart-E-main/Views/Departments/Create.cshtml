@@ -1,0 +1,109 @@
+﻿@*@model Smart_E.Data.Department
+
+@{
+    ViewData["Title"] = "Create Department";
+    Layout = "_Layout";
+}
+<head>
+    <link rel="stylesheet" type="text/css" href="~/assets/extra-libs/Multiselect/lou-multi-select-57fb8d3/css/multi-select.dist.css">
+    <link rel="stylesheet" type="text/css" href="~/assets/extra-libs/Multiselect/lou-multi-select-57fb8d3/css/multi-select.css">
+    <link rel="stylesheet" type="text/css" href="~/assets/extra-libs/Multiselect/lou-multi-select-57fb8d3/css/multi-select.dev.css">
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/select2/dist/css/select2.min.css">
+</head>
+<h4>Create Department</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="DeptName" class="control-label"></label>
+                <input asp-for="DeptName" class="form-control" />
+                <span asp-validation-for="DeptName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="HODId" class="control-label" for="cbHOD">Select HOD for Department</label>
+                <select asp-for="HODId" id="cbHOD" class="select2 form-control" style="width: 100%">
+                </select>
+                <span asp-for="HODId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <a asp-action="Departments" class="btn btn-default">Cancel</a>
+                <button type="button" onclick="javascript: createDepartment();" class="btn btn-outline-success waves-effect waves-light">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <script src="~/assets/extra-libs/Multiselect/lou-multi-select-57fb8d3/js/jquery.multi-select.js"></script>
+    <script src="~/assets/extra-libs/Multiselect/quicksearch-master/jquery.quicksearch.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.min.js"></script>
+    <script src="~/dist/js/pages/forms/select2/select2.init.js"></script>
+</div>
+<script>
+
+    function createDepartment(){
+    var model = {
+            departName: $('#DeptName').val(),
+            hodName: $('#cbHOD').val(),
+        }
+        $.ajax({
+            url: '@Url.Action("CreateDepartment", "Departments")',
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify(model),
+            contentType: "application/json; charset=utf-8",
+            success: function(result) {
+
+                window.location.href = '@Url.Action("Departments","Departments")';
+
+            },
+            error: function(jqXHR, exception) {
+                swal({
+                    title: "ERROR STATUS " + jqXHR.status,
+                    text: "Error Message: " + jqXHR.responseText,
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "OK"
+                });
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        
+        loadHOD();
+    });
+    function loadHOD() {
+
+        $.ajax({
+            url: '@Url.Action("GetHODs", "Departments")',
+            type: 'GET',
+            success: function (result) {
+                $('#cbHOD').empty();
+
+                $('#cbHOD').append('<option>--- Select HOD ---</option>');
+
+                for (var i = 0; i < result.length; i++) {
+                    $('#cbHOD').append('<option value="' + result[i]["id"] + '">' + result[i]["name"] + '</option>');
+                }
+            },
+            error: function (jqXHR, exception) {
+                swal({
+                    title: "ERROR STATUS " + jqXHR.status,
+                    text: "Error Message: " + jqXHR.responseText,
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "OK"
+                });
+            }
+        });
+
+    }
+  
+
+
+</script>*@
+

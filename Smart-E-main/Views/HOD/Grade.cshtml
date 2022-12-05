@@ -1,0 +1,103 @@
+﻿@model IEnumerable<Smart_E.Models.Grade>
+@*@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Identity
+@{
+    ViewBag.Title = "Grades";
+    Layout = "_Layout";
+    var isHOD = await _userManager.GetUserAsync(User);
+
+}
+@inject UserManager<ApplicationUser> _userManager
+
+@inject IViewLocalizer _localizer*@
+
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+
+    <link href="~/assets/libs/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="~/assets/libs/footable/css/footable.core.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/select2/dist/css/select2.min.css">
+    <link href="~/assets/libs/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
+</head>
+
+<body>
+    <div class="preloader">
+        <div class="lds-ripple">
+            <div class="lds-pos"></div>
+            <div class="lds-pos"></div>
+        </div>
+    </div>
+
+    <div class="page-breadcrumb">
+        <div class="row">
+            <div class="col-5 align-self-center">
+                <h3 class="page-title">@*@_localizer["GRADE"]*@</h3>
+                <div class="d-flex align-items-center">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                @* <button type="button" onclick="javascript:showAddTeacherModal();" style="margin-left: 5px;" class="btn btn-sm btn-success float-lg-right" @(await _userManager.IsInRoleAsync(isHOD, "HOD") ? "" : "hidden=\"hidden\"")><i class="fas fa-plus"><span> Add New Teacher</span></i></button>*@
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        @if (Model.Count() > 0)
+                        {
+                            <table id="tblGrades" class="table v-middle">
+                                <tbody>
+                                    @foreach (var grades in Model)
+                                    {
+                                        <tr>
+                                            <td width="30%">@grades.Description</td>
+                                            <td><button type="button" class="btn btn-sm btn-warning float-lg-right"><a asp-controller="HOD" asp-action="CreateSubject"> Add Subject </a></button></td>
+                                            <td><button type="button" class="btn btn-sm btn-secondary float-lg-right"><a asp-controller="HOD" asp-action="ViewSubjects">View Subjects</a></button></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else{
+                            <p>None</p>
+                        }
+                        <div class="form-group row">
+                            <div class="col-6 offset-2 row position-static">                             
+                                <div class="col">
+                                    <a asp-action="HOD" asp-controller="Home"class="btn btn-outline-danger w-75">Back</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<div>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker-custom.js"></script>
+    <script src="~/assets/extra-libs/DataTables/datatables.min.js"></script>
+    <script src="~/dist/js/pages/datatable/datatable-basic.init.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.min.js"></script>
+    <script src="~/dist/js/pages/forms/select2/select2.init.js"></script>
+    <script src="~/assets/libs/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="~/assets/libs/sweetalert2/sweet-alert.init.js"></script>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+
+
+</div>

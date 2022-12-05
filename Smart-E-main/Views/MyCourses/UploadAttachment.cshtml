@@ -1,0 +1,38 @@
+﻿@model Smart_E.Models.Courses.ChapterViewModel
+
+@{
+    ViewData["Title"] = "Add Document";
+    Layout = "_Layout";
+}
+
+<div  class="container-fluid"  style="background-color: #2f3d54; color: white">
+    <form method="post" enctype="multipart/form-data">
+        <div class="form-row">
+            <div class="col-md-4">
+                <h2>Upload Chapter Content</h2>
+                <label>File Name</label>
+                <input class="form-control form-control-lg" placeholder="File Name"
+                       asp-for="FileName" required />
+                <div class="form-group">
+                    <label asp-for="ChapterID">Chapter</label>
+                    <select asp-for="ChapterID" class="form-control">
+                        <option value="0">select a Topic</option>
+                        @foreach (var t in ViewBag.Chapter)
+                        {
+                            <option value="@t.ChapterID">@t.ChapterName</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group col-md-10">
+                    <label>Attachment</label>
+                    <input class="form-control form-control-lg" placeholder="Middle Name"
+                           asp-for="attachment" type="file" required />
+                </div>
+                <div class="form-group">
+                    <button  type="submit" class="btn btn-sm btn-success"  onclick="history.back()">@ViewBag.Action</button>
+                    <input type="button" value="Cancel" onclick="history.back()">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

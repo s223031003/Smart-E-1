@@ -1,0 +1,160 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Mvc.Localization
+@{
+    ViewBag.Title = "Students";
+    Layout = "_Layout";
+
+}
+@inject IViewLocalizer _localizer
+
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+    <link href="~/assets/libs/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="~/assets/libs/footable/css/footable.core.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/select2/dist/css/select2.min.css">
+    <link href="~/assets/libs/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
+</head>
+
+<body>
+<div class="preloader">
+<div class="lds-ripple">
+    <div class="lds-pos"></div>
+    <div class="lds-pos"></div>
+</div>
+</div>
+
+<div class="page-breadcrumb">
+    <div class="row">
+        <div class="col-5 align-self-center">
+            <h3 class="page-title">@_localizer["All Students"]</h3>
+            <div class="d-flex align-items-center">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tblUsers" class="table v-middle">
+                        <thead>
+                        <tr>
+                            <th style="width: 160px;">@_localizer["Name"]</th>
+                            <th style="width: 160px;">@_localizer["Email"]</th>
+                            <th style="width: 160px;">@_localizer["Grade"]</th>
+                            <th style="width: 160px;">@_localizer["Subject"]</th>
+                            <th style="width: 160px;">@_localizer["Progress"]</th>
+                            <th style="width: 160px;">@_localizer["Active"]</th>
+                            <th style="width: 50px"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tfoot>
+                        <tr>
+                            <th>@_localizer["Name"]</th>
+                            <th>@_localizer["Email"]</th>
+                            <th>@_localizer["Grade"]</th>
+                            <th>@_localizer["Subject"]</th>
+                            <th>@_localizer["Progress"]</th>
+                            <th>@_localizer["Active"]</th>
+                            <th></th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<div>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker-custom.js"></script>
+    <script src="~/assets/extra-libs/DataTables/datatables.min.js"></script>
+    <script src="~/dist/js/pages/datatable/datatable-basic.init.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.min.js"></script>
+    <script src="~/dist/js/pages/forms/select2/select2.init.js"></script>
+    <script src="~/assets/libs/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="~/assets/libs/sweetalert2/sweet-alert.init.js"></script>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+
+
+</div>
+<script>
+
+    $(document).ready(function() {
+        loadStudents();
+    });
+    var tblStudents = $('#tblStudents').DataTable({
+        createdRow: function(row, data, dataIndex) {
+            $(row).attr('id', data.id);
+        },
+        "columns": [
+            { "data": "name" },
+            { "data": "email" },
+            { "data": "grade" },
+            { "data": "subject" },
+            { "data": "progress" },
+            { "data": "active" },
+            { "data": "buttons" }
+        ]
+    });
+
+    function loadStudents() {
+        $.ajax({
+            url: '@Url.Action("GetAllStudents", "Student")',
+            type: 'GET',
+            success: function(result) {
+
+                var rows = [];
+
+                for (var i = 0; i < result.length; i++) {
+
+                    rows.push({
+                        id: result[i].id,
+                        name: result[i].name,
+                        email: result[i].email,
+                        grade: result[i].grade,
+                        subject: result[i].subject,
+                        progress: result[i].progress,
+                        active: result[i].active,
+                        buttons: `<div><button type="button" class="btn btn-sm btn-outline-info waves-effect waves-light align-content-end float-lg-right"
+                            style="margin-right: 3px" data-toggle="tooltip" onclick="javascript:sendMail('${result[i].id}')
+                            data-original-title="Email"><span><i class="fas fa-envelope" aria-hidden="true"></i> Email</span></button></div>
+                            <button type="button" class="btn btn-sm btn-outline-warning waves-effect waves-light align-content-end float-lg-right"
+                            style="margin-right: 3px" data-toggle="tooltip" onclick="javascript:editUserRoles('${result[i].id}')
+                            data-original-title="Manage Roles"><span><i class="fas fa-users" aria-hidden="true"></i> Manage Roles</span></button></div>`
+
+                    });
+
+                }
+
+                tblStudents.rows.add(rows).draw();
+
+            },
+            error: function(jqXHR, exception) {
+                swal({
+                    title: "ERROR STATUS " + jqXHR.status,
+                    text: "Error Message: " + jqXHR.responseText,
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "OK"
+                });
+            }
+        });
+    }
+
+    function editUserRoles(id) {
+    }
+</script>

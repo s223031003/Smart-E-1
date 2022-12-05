@@ -1,0 +1,177 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Mvc.Localization
+@{
+    ViewBag.Title = "Report";
+    Layout = "_Layout";
+
+}
+@inject IViewLocalizer _localizer
+
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+    <link href="~/assets/libs/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="~/assets/libs/footable/css/footable.core.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/select2/dist/css/select2.min.css">
+    <link href="~/assets/libs/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
+</head>
+
+<body>
+
+<div class="preloader">
+    <div class="lds-ripple">
+        <div class="lds-pos"></div>
+        <div class="lds-pos"></div>
+    </div>
+</div>
+
+<div class="page-breadcrumb">
+    <div class="row">
+        <div class="col-5 align-self-center">
+            <h1 class="page-title" style="text-align:center">@_localizer["Learner Report"]</h1>
+             </div>
+ <div class="container">
+            <div class="d-flex align-items-center">
+                 <b class="logo-icon" >
+                            <img style="width:50%" src="/images/smart-e_Logo.jpg" />
+                        </b>
+<div class="col-md-4">
+                         <div class="form-group">
+           <label >Grade</label>
+          <select id="ddSubject" class="form-control">
+           <option value="0">select a grade</option>
+         
+          </select>
+      </div>
+      <div class="form-group">
+           <label >Date</label>
+           <input class="form-control" />
+       </div>
+</div>
+            </div>
+       </div>
+       
+    </div>
+<div class="row">
+<div class="col-md-4">
+     <div class="form-group">
+          <label >Teacher Name</label>
+          <select id="ddSubject" class="form-control">
+           <option value="0">select a Teacher</option>
+         
+          </select>
+      </div>
+     <div class="form-group">
+           <label >Contact Number</label>
+         <input  class="form-control" />
+      </div>
+</div>
+</div>
+<div class="row">
+<div class="col-md-4">
+    <div class="form-group">
+          <label >Learners Name</label>
+          <select id="ddSubject" class="form-control">
+           <option value="0">select a Learner</option>
+         
+          </select>
+      </div>
+     
+</div>
+</div>
+
+<div class="container-fluid">
+   
+    <div class="row">
+        <div class="col-12">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tblCourses" class="table v-middle">
+                        <thead>
+                        <tr>
+                            <th style="width: 180px;">@_localizer["Subject Name"]</th>
+                            <th style="width: 180px;">@_localizer["Term 1"]</th>
+                            <th style="width: 180px;">@_localizer["Term 2"]</th>
+                            <th style="width: 180px;">@_localizer["Term 3"]</th>
+                            <th style="width: 180px;">@_localizer["Term 4"]</th>
+                            <th style="width: 50px"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                             <tr>
+                                 <th style="width: 50px"></th>
+                             <th style="width: 180px;"> <input  class="form-control" /> </th>
+                            <th style="width: 180px;"> <input  class="form-control" /></th>
+                             <th style="width: 180px;"> <input  class="form-control" /></th>
+                             <th style="width: 180px;"> <input  class="form-control" /></th>
+                            <th style="width: 50px"></th>
+                        
+                        </tr>
+                       
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+<div class="col-md-4">
+     <div class="form-group">
+           <label >Learners Average</label>
+         <input  class="form-control" />
+      </div>
+
+       <div class="form-group">
+           <label >Grade Average</label>
+         <input  class="form-control" />
+      </div>
+</div>
+</div>
+  <div class="form-group">
+           <label >Teacher Feedback</label>
+         <input  class="form-control" />
+      </div>
+        </div>
+    </div>
+    <button class="btn btn-outline-danger waves-effect waves-light" type="submit">Download and print</button>
+</div>
+  <div id="addContact" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+          
+    </div>
+</div>
+</body>
+<div>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker-custom.js"></script>
+    <script src="~/assets/extra-libs/DataTables/datatables.min.js"></script>
+    <script src="~/dist/js/pages/datatable/datatable-basic.init.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.min.js"></script>
+    <script src="~/dist/js/pages/forms/select2/select2.init.js"></script>
+    <script src="~/assets/libs/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="~/assets/libs/sweetalert2/sweet-alert.init.js"></script>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+</div>
+<script>
+    function showAddCourseModal() {
+        $('#addContact').modal('show');
+    }
+  
+   
+    }
+
+    $(document).ready(function() {
+        loadCourses();
+    });
+    var tblCourses = $('#tblCourses').DataTable({
+        createdRow: function(row, data, dataIndex) {
+            $(row).attr('id', data.id);
+        },
+        
+    });
+    }
+</script>

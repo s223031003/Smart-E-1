@@ -1,0 +1,210 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.Localization
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_Layout";
+
+
+}
+@inject IViewLocalizer _localizer
+@inject UserManager<ApplicationUser> _userManager
+<head>
+    @inject IViewLocalizer _localizer
+    @inject UserManager<ApplicationUser> UserManager
+    @model Smart_E.Models.AdministrationViewModels.ProfileViewModel
+
+    <title>Student Dashboard</title>
+    <link href="~/assets/libs/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="~/assets/libs/footable/css/footable.core.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/select2/dist/css/select2.min.css">
+    <link href="~/assets/libs/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+</head>
+<body class="font">
+    <div class="container-fluid" style="background:white">
+        <div class="main" style="margin-bottom: 5px;">
+            <div class="main-top">
+                <div class="col-5 align-self-center">
+                    <h1 class="page-title" style="color:#008080">@_localizer["WELCOME TO YOUR PAGE"]</h1>
+                    <div class="d-flex align-items-center">
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="grid-container">
+                <div class="grid-item item1">
+                    <a asp-controller="Courses" asp-action="Courses">
+                        <div class="enrolpic">
+                            <img class="enrol" src="~/images/Enrol.png">
+                        </div>
+                        <hr />
+                        <div>
+                            <p style="color:#008080; font-family:Arial; font:bold">List of subjects to enroll into</p>
+                        </div>
+
+
+                    </a>
+                </div>
+
+
+                <div class="grid-item item2">
+                    <a asp-controller="Profile" asp-action="Profile" class="btn btn-fix ">
+                        <div>
+                            <div class="enrolpic">
+                                <img class="enrollimg" src="~/images/section-profile.png" />
+
+                            </div>
+                            <br />
+                            <br />
+                            <hr />
+
+                            <div class="profile">
+                                <h2 style="color:#008080; font-family:Arial">Your profile</h2>
+
+
+
+                                <ul style="list-style:none; color:#008080; font-family:Arial; font-size: 17px;">
+                                    <li>Name: @ViewBag.FirstName</li>
+                                    <li>Surname: @ViewBag.LastName </li>
+                                    <li>Email Address: @ViewBag.Email</li>
+                                    <li>Contact Number: @ViewBag.PhoneNumber</li>
+                                </ul>
+
+
+
+                            </div>
+
+                        </div>
+                    </a>
+                </div>
+
+
+                <div class="grid-item item3">
+                    <a asp-controller="Assignments" asp-action="GetAllMyAssignmentMarks">
+                        <div class="enrolpic">
+                            <img class="enrol" src="~/images/assignments.png">
+                        </div>
+                        <hr />
+                        <div>
+
+                            <h3 style="color:#008080; font-family:Arial; font: bold">View all assignment marks</h3>
+                        </div>
+                    </a>
+                </div>
+
+
+                <div div class="grid-item item4">
+                    <a asp-controller="MyCourses" asp-action="MyCourses">
+                        <div class="enrolpic">
+                            <img class="enrol" src="~/images/MySubjects.png">
+                        </div>
+                        <hr />
+                        <div>
+
+                            <h3 style="color:#008080; font-family:Arial; font: bold">Subjects enroled into:</h3>
+                            <h3>@ViewBag.TotalSubject</h3>
+                        </div>
+                    </a>
+                </div>
+
+
+
+
+                @*<section class="my-subjects" style="margin-top: 20px; text-transform: capitalize;">
+                <h1 style="color:#008080">My Subjects</h1>
+                <div class="subject-box" style="width: 100%; padding: 10px; background: white; border-radius: 10px; box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1)">
+                <ul style="list-style:none; display: flex;">
+                <li style="margin: 10px; color:grey; cursor: pointer; font-color=#000; border-bottom: 1px solid #000">In progress</li>
+                <li style="margin: 10px; color:grey; cursor: pointer; ">Explore</li>
+                </ul>
+                <div class="subject" style="display: flex;">
+                <div class="box" style="max-width: 36rem; text-align:center; background-color: #008080;padding:10px; display:flex; shape-outside: margin-box; border-radius: 10px; margin: 10px; box-shadow: 0 20px 34px 0, 0 6px 20px 0">
+                <i class="fas fa-dna" aria-hidden="true" style="color:white; font-size:36px"></i>
+                <h3 style="color: white">LIFE SCIENCE</h3>
+                <buton button style="background: grey; color: white; border-radius:10px; padding:8px;font: bold ;font-size:16px; margin-top: 3rem; cursor: pointer">Continue</buton>
+
+                </div>
+                </div>
+                </div>
+                </section>*@
+
+            </div>
+        </div>
+    </div>
+
+</body>
+<style>
+    .font {
+        margin: 0;
+        padding: 0;
+        box-sizing: boarder-box;
+        font-family: "Poppins", sans-serif;
+    }
+
+    .grid-container {
+        display: grid;
+        gap: 10px;
+        background-color: #2196F3;
+        padding: 10px;
+    }
+
+    .grid-item {
+        background-color: ghostwhite;
+        text-align: center;
+        padding: 20px;
+        font-size: 30px;
+        box-shadow: 0 20px 34px 0, 0 6px 20px 0;
+    }
+
+    .item1 {
+        grid-column: 1 / span 2;
+        grid-row: 1;
+        border-radius: 10px;
+    }
+
+    .item2 {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+        border-radius: 10px;
+    }
+
+    .item5 {
+        grid-column: 1 / span 3;
+        grid-row: 3;
+        border-radius: 10px;
+    }
+
+    /* .enroll {
+                    padding: 3rem;
+                    max-width: 30%;
+                    height: 150px;
+                    float: right;
+                }*/
+
+    .enrolpic {
+        float: center;
+        height: 150px;
+        float: center;
+    }
+
+    .enrol {
+        float: center;
+        height: 150px;
+        float: center;
+    }
+
+    .enrollimg {
+        float: center;
+        height: 150px;
+        float: center;
+    }
+
+    .profile {
+        text-align: left;
+    }
+</style>

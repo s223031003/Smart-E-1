@@ -1,0 +1,11 @@
+﻿@model IEnumerable<Smart_E.Models.TransactionsModel>
+
+@{
+    ViewData["Title"] = "Transaction";
+}
+
+
+
+<div id="view-all">
+    @await Html.PartialAsync("_ViewAll", Model)
+</div>

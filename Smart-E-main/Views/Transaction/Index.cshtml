@@ -1,0 +1,15 @@
+﻿@model IEnumerable<Smart_E.Models.TransactionsModel>
+
+@{
+    ViewData["Title"] = "Transaction";
+}
+
+<h2 class="text-center"><i class="fas fa-comment-dollar text-success">Transaction History</i></h2>
+@using (Html.BeginForm("Export", "Transaction"))
+        {
+            <input type="submit" value="Export" class="btn btn-success float-lg-right"/>
+        }
+
+<div id="view-all">
+    @await Html.PartialAsync("_ViewAll", Model)
+</div>

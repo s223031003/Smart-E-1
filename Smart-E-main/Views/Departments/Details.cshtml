@@ -1,0 +1,36 @@
+﻿@*@model Smart_E.Data.Department
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Department</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.DeptName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.DeptName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.HODId)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.HODId)
+        </dd>
+       @* <dt>
+            @Html.DisplayNameFor(model => model.CourseId)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CourseId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-info">Update</a> |
+    <a asp-action="Departments" class="btn btn-outline-secondary">Go Back</a>
+</div>*@

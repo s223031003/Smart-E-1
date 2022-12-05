@@ -1,0 +1,51 @@
+﻿@model Subject
+
+<form method="post" asp-action="CreateSubject">
+    <div class="border p-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <h2 class="text-black-50 pl-3">Add Subject</h2>
+        </div>
+        <div class="row">
+            <div class="col-20">
+                <div class="form-group row">
+                    <div class="col-6">
+                        <label asp-for="SubjectName">Subject Name</label>
+                    </div>
+                    <div class="col-6">
+                        <input asp-for="SubjectName" class="form-control" />
+                        <span asp-validation-for="SubjectName" class="text-danger"></span>
+                    </div>
+                    <br />
+                   @* <div class="col-6">
+                        <label asp-for="Description">Description</label>
+                    </div>
+                    <div class="col-6">
+                        <input asp-for="Description" class="form-control" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <br />
+                    <div class="col-6">
+                        <label asp-for="DeptId">Department</label>
+                    </div>
+                    <div class="col-6">
+                        <input asp-for="DeptId" class="form-control" />
+                        <span asp-validation-for="DeptId" class="text-danger"></span>
+                    </div>*@
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-12 offset-2 row position-static">
+                        <div class="col">
+                            <input type="submit" class="btn btn-outline-info w-75" value="Create" />
+                        </div>
+                        <div class="col">
+                            <a asp-action="Grade" class="btn btn-outline-danger w-75">Back</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>

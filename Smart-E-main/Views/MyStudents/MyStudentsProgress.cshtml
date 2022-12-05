@@ -1,0 +1,558 @@
+﻿@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
+
+@model Smart_E.Models.MyStudent.MyStudentsProgressViewModel
+@inject UserManager<ApplicationUser> UserManager 
+
+@{
+    ViewBag.Title = "My Student's Progress";
+    Layout = "_Layout";
+
+    var user = await UserManager.GetUserAsync(User);
+
+
+}
+
+@inject IOptions<RequestLocalizationOptions> LocOptions
+
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+
+    var cultureItems = LocOptions.Value.SupportedUICultures
+        .Select(c => new SelectListItem {Value = c.Name, Text = c.DisplayName})
+        .ToList();
+    var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}";
+}
+
+@inject IViewLocalizer _localizer
+
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+    <link href="~/assets/libs/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="~/assets/libs/footable/css/footable.core.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/select2/dist/css/select2.min.css">
+    <link href="~/assets/libs/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css"/>
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
+</head>
+
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+</style>
+<body>
+
+<div class="preloader">
+    <div class="lds-ripple">
+        <div class="lds-pos"></div>
+        <div class="lds-pos"></div>
+    </div>
+</div>
+
+<div class="page-breadcrumb">
+    <div class="row">
+        <div class="col-5 align-self-center">
+            <h4 class="page-title">@_localizer["MY STUDENT'S PROGRESS"]</h4>
+            <div class="d-flex align-items-center">
+            </div>
+        </div>
+        <div class="col-7 align-self-center">
+            <div class="d-flex no-block justify-content-end align-items-center">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a asp-controller="MyStudents" asp-action="MyStudents">@_localizer["All My Students"]</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">@_localizer["My student's progress"]</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+                
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-3 col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row p-t-10 p-b-10">
+                        <!-- Column -->
+                        <div class="col p-r-0">
+                            <h3 class="font-light">
+                                <a id="courseId">@Model.CourseName</a>
+                            </h3>
+                            <h6 class="text-muted">Subject</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row p-t-10 p-b-10">
+                        <div class="col p-r-0">
+                            <h3 id="" class="font-light">
+                                <a id="aPolicyName" href="javascript:showStudentInformationModal(); "style="color: blue">@Model.Name</a>
+                            </h3>
+                            <h6 class="text-muted">Student's Name</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="row p-t-10 p-b-10">
+                    <div class="col p-r-0">
+                        <h3 id="" class="font-light">
+                            <a  href="javascript:showStudentAttendanceModal(); "style="color: blue"  >@Model.NumberOfClassesAttended</a>
+                        </h3>
+                        <h6 class="text-muted">Student's Attendance Score</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="col-lg-3 col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row p-t-10 p-b-10">
+                        <div class="col p-r-0">
+                            <h3 class="font-light">@Model.Grade</h3>
+                            <h6 class="text-muted">Grade</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table id="tblStudentMarksForAssignments" class="table v-middle">
+            <thead>
+            <tr>
+                <th>@_localizer["Date"]</th>
+                <th>@_localizer["Assignment Name"]</th>
+                <th>@_localizer["Assignment Mark"]</th>
+                <th>@_localizer["New Mark"]</th>
+                <th style="width: 50px"></th>
+            </tr>
+            </thead>
+            <tbody>
+                      
+                              
+            <tfoot>
+            <tr>
+                <th>@_localizer["Date"]</th>
+                <th>@_localizer["Assignment Name"]</th>
+                <th>@_localizer["Assignment Mark"]</th>
+                <th>@_localizer["New Mark"]</th>
+                <th></th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+
+<div id="editAssignmentMark" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Assignment Mark</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="card-body">
+                    <div class="form-group">
+                    <label class="text-right control-label" for="txtEditAssignmentDate">Submission Date</label>
+                    <input autocomplete="off" required="required" class="form-control" type="text" id="txtEditAssignmentDate" readonly="readonly" />
+                    </div>
+                    <div class="form-group">
+                        <label class="text-right control-label" for="txtEditAssignmentName">Assignment Name</label>
+                        <input autocomplete="off" required="required" class="form-control" type="text" id="txtEditAssignmentName" readonly="readonly"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="text-right control-label" for="txtEditAssignmentMark">Assignment Mark</label>
+                        <input autocomplete="off" class="form-control" type="text" id="txtEditAssignmentMark" readonly="readonly"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="text-right control-label" for="txtEditAssignmentWeight">Weight</label>
+                        <input class="form-control" type="number" id="txtEditAssignmentWeight" readonly="readonly"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="text-right control-label" for="txtEditAssignmentNewMark">Assignment New Mark</label>
+                        <input class="form-control" type="number" id="txtEditAssignmentNewMark"/>
+                    </div>
+                   
+                    <div class="form-group row ">
+                        <div class="col-md-12">
+                            <div class="custom-control custom-checkbox float-right">
+                                <input type="checkbox" class="custom-control-input" id="cbEditOutstanding" onchange="javascript:changeOutstanding();">
+                                <label class="custom-control-label" for="cbEditOutstanding">Outstanding</label>
+                            </div>
+                        </div>
+                    </div>
+                    <input id="txtEditAssignmentId" hidden="hidden"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-info waves-effect float-lg-right" data-dismiss="modal">Cancel</button>
+                <button type="button" onclick="javascript:updateAsssignmentMark();" class="btn btn-outline-danger waves-effect waves-light  float-lg-right">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="showStudentInformationModal" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Email Student</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label class="text-right control-label" >Student's Name</label>
+                        <input autocomplete="off" required="required" class="form-control" type="text" value="@Model.Name" readonly="readonly"/>
+                    </div>
+                    <div class="form-group row">
+                        <label class="text-right control-label" >Student's Email</label>
+                        <input autocomplete="off" required="required" class="form-control" type="text" value="@Model.StudentEmail" readonly="readonly"/>
+                    </div>
+                    <div class="form-group row">
+                        <textarea type="text" class="form-control" id="txtMessage" rows="20" placeholder="Your Message..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-info waves-effect float-lg-right" data-dismiss="modal">Cancel</button>
+                <button type="button" onclick="javascript:sendMessage();" class="btn btn-outline-success waves-effect waves-light float-lg-right">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="showStudentAttendanceModal" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Student's Attendance</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label class="text-right control-label" for="txtNumberOfClasses">Number of classes</label>
+                        <input id="txtNumberOfClasses" type="number" autocomplete="off" required="required" class="form-control" type="text" value="@Model.NumberOfClasses" readonly="readonly"/>
+                    </div>
+                    <div class="form-group row">
+                        <label class="text-right control-label" for="txtNumberOfClassesAttended" >Number of classes attended</label>
+                        <input id="txtNumberOfClassesAttended" type="number" autocomplete="off" required="required" class="form-control" type="text" value="@Model.NumberOfClassesAttended" onchange="higherNumberOfClaasses()"/>
+                    </div>
+                </div>
+                <input id="txtEditAttendanceid" hidden="hidden" />
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-info waves-effect float-lg-right" data-dismiss="modal">Cancel</button>
+                <button type="button" onclick="javascript:updateAttendance();" class="btn btn-outline-warning waves-effect waves-light float-lg-right">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+<div>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker-custom.js"></script>
+    <script src="~/assets/extra-libs/DataTables/datatables.min.js"></script>
+    <script src="~/dist/js/pages/datatable/datatable-basic.init.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.min.js"></script>
+    <script src="~/dist/js/pages/forms/select2/select2.init.js"></script>
+    <script src="~/assets/libs/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="~/assets/libs/sweetalert2/sweet-alert.init.js"></script>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+</div>
+
+
+<script>
+    function higherNumberOfClaasses(){
+         $.ajax({
+             url: `@Url.Action("HigherNumberOfClasses", "MyStudents")?courseId=` + '@Model.CourseId' + `&numberOfClassesAttended=` + $('#txtNumberOfClassesAttended').val(),
+            type: 'POST',
+            success: function(result) {               
+               
+
+            },
+            error: function(jqXHR, exception) {
+
+                Swal.fire({
+                    icon: 'error',
+                    title: "ERROR STATUS " + jqXHR.status,
+                    text: "Error Message: " + jqXHR.responseText
+                });
+            }
+        });
+    
+    
+    
+    }
+
+    function updateAttendance(){
+        var model = {
+            id: $('#txtEditAttendanceid').val(),
+            numberOfClassesAttended: $('#txtNumberOfClasses').val()
+        };
+        $.ajax({
+                url: `@Url.Action("UpdateStudentAttendance", "MyStudents")`,
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                success: function(result) {
+
+                    toastr.success('Attendance Updated', 'Successful!');
+                    
+                    $('#showStudentAttendanceModal').modal('hide');
+                    
+                    location.reload();
+
+                },
+                error: function(jqXHR, exception) {
+                    Swal.fire({
+                        title: "ERROR",
+                        text: jqXHR.responseText,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonText: "OK"
+                    });
+                }
+            });      
+    
+    }
+    
+    
+    
+
+function showStudentInformationModal(){
+    $('#showStudentInformationModal').modal('show'); 
+
+}
+function showStudentAttendanceModal(){
+      $.ajax({
+                url: `@Url.Action("GetStudentAttendance", "MyStudents")?studentId=@Model.Id&courseId=@Model.CourseId`,
+                type: 'GET',
+                success: function(result) {
+
+                    $('#txtEditAttendanceid').val(result.id);
+                    $('#txtNumberOfClassesAttended').val(result.numberOfClassesAttended);                
+                    $('#txtNumberOfClasses').val(result.numberOfClasses);
+
+                    $('#showStudentAttendanceModal').modal('show'); 
+                },
+                error: function(jqXHR, exception) {
+                    Swal.fire({
+                        title: "ERROR STATUS " + jqXHR.status,
+                        text: "Error Message: " + jqXHR.responseText,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonText: "OK"
+                    });
+                }
+            });
+
+}
+    function changeOutstanding(){    
+        $.ajax({
+            url: `@Url.Action("UpdateOutstandingAssignment", "Assignments")?id=`+ $('#txtEditAssignmentId').val() +`&outstanding=` + $('#cbEditOutstanding').is(":checked"),
+            type: 'POST',
+            success: function(result) {
+                
+                 if (result.outstanding === true)
+                {
+                    document.getElementById("txtEditAssignmentNewMark").disabled = true;
+                    $('#txtEditAssignmentNewMark').val(result.newMark);
+                }
+
+                else{
+                    document.getElementById("txtEditAssignmentNewMark").disabled = false;
+                }
+
+            },
+            error: function(jqXHR, exception) {
+
+                Swal.fire({
+                    icon: 'error',
+                    title: "ERROR STATUS " + jqXHR.status,
+                    text: "Error Message: " + jqXHR.responseText
+                });
+            }
+        });
+    
+    
+    }
+    function updateAsssignmentMark(){
+        
+        var model = {
+            id: $('#txtEditAssignmentId').val(),
+            newMark: $('#txtEditAssignmentNewMark').val(),
+            outstanding:$('#cbEditOutstanding').is(":checked"),
+        };
+        $.ajax({
+                url: `@Url.Action("UpdateCurrentStudentsAssignmentMark", "Assignments")`,
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify(model),
+                contentType: "application/json; charset=utf-8",
+                success: function(result) {
+
+                    toastr.success('Assignment mark updated', 'Successful!');
+                    
+                    $('#editAssignmentMark').modal('hide');
+                    
+                    location.reload();
+
+                },
+                error: function(jqXHR, exception) {
+                    Swal.fire({
+                        title: "ERROR",
+                        text: jqXHR.responseText,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonText: "OK"
+                    });
+                }
+            });      
+    
+    }
+
+    $(document).ready(function() {
+        loadMyStudentsAssignments();
+    });
+
+    var tblStudentMarksForAssignments = $('#tblStudentMarksForAssignments').DataTable({
+        createdRow: function(row, data, dataIndex) {
+            $(row).attr('id', data.id);
+        },
+        "columns": [
+            { "data": "date"},
+            { "data": "assignmentName" },
+            { "data": "assignmentMark" },
+            { "data": "newMark"},
+            { "data": "buttons" }
+        ]
+    });
+    
+   function showEditAssignmnet(id) {
+            $.ajax({
+                url: `@Url.Action("GetMyStudentsAssignmentMark", "Assignments")?assignmentResultId=${id}`,
+                type: 'GET',
+                success: function(result) {
+
+                    $('#txtEditAssignmentId').val(result.id);
+                    $('#txtEditAssignmentName').val(result.assignmentName);
+                    $('#txtEditAssignmentDate').val(result.date),
+                    $('#txtEditAssignmentMark').val(result.assignmentMark);
+                    $('#txtEditAssignmentWeight').val(result.weight);
+                    $('#txtEditAssignmentNewMark').val(result.newMark);
+                    $('#cbEditOutstanding').prop('checked', result.outstanding);
+                    
+                    if (result.outstanding === true)
+                    {
+                        document.getElementById("txtEditAssignmentNewMark").disabled = true;
+                        
+                    }else{
+                        document.getElementById("txtEditAssignmentNewMark").disabled = false;
+                    
+                    }
+                   
+
+                    $('#editAssignmentMark').modal('show');
+                },
+                error: function(jqXHR, exception) {
+                    Swal.fire({
+                        title: "ERROR STATUS " + jqXHR.status,
+                        text: "Error Message: " + jqXHR.responseText,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonText: "OK"
+                    });
+                }
+            });
+        }
+    
+    function loadMyStudentsAssignments() {
+        $.ajax({
+            url: `@Url.Action("GetAllMyStudentsAssignment", "Assignments")?studentId=@Model.Id&courseId=@Model.CourseId`,
+            type: 'GET',
+            success: function(result) {
+
+                var rows = [];
+
+                for (var i = 0; i < result.length; i++) {
+
+                    rows.push({
+                        id: result[i].id,
+                        date:result[i].date,
+                        assignmentName: result[i].assignmentName,
+                        assignmentMark:  result[i].assignmentMark,
+                        newMark:result[i].newMark,
+                        buttons: `
+                                <button type="button" class="btn btn-sm btn-outline-warning waves-effect waves-light align-content-end float-lg-right"
+                                style="margin-right: 3px" data-toggle="tooltip" onclick="javascript:showEditAssignmnet('${result[i].id}');"
+                                data-original-title="Edit"><span><i class="fas fa-pen" aria-hidden="true"></i> Edit</span></button></div>`
+                    });
+
+                }
+
+                tblStudentMarksForAssignments.rows.add(rows).draw();
+
+            },
+            error: function(jqXHR, exception) {
+                swal({
+                    title: "ERROR STATUS " + jqXHR.status,
+                    text: "Error Message: " + jqXHR.responseText,
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "OK"
+                });
+            }
+        });
+    }
+
+    
+
+
+</script>
+
+

@@ -1,0 +1,87 @@
+﻿@model IEnumerable<Smart_E.Models.TransactionsModel>
+<head>
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
+</head>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            @using (Html.BeginForm("Export", "Transaction"))
+            {
+                <input type="submit" value="Export" class="btn btn-success float-lg-left" />
+            }
+            <h2 class="text-center">Transaction History</h2>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tblTransactions" class="table v-middle">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.AccountNumber)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.AccountOwner)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Date)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Amount)
+                                </th>
+                                <th><a asp-action="Create" class="btn btn-success">New Transaction</a>
+
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                    @foreach (var item in Model) {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.AccountNumber)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.AccountOwner)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Date)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Amount)
+                                </td>
+                                <td>
+                                    @*<a onclick="showInPopup('@Url.Action("AddOrEdit","Transaction", new{id = item.TransactionId}, Context.Request.Scheme)','Transaction Details')" class="btn btn-info text-white"><i class="fas fa-person">View Transaction</i></a> |*@
+                                    <form asp-action="Details" asp-route-id="@item.TransactionId" class="d-inline">
+                                        <input type="submit" value="View Transaction" class="btn btn-outline-info"/>
+                                    </form>
+                
+                                </td>
+                            </tr>
+                    }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <script src="~/assets/extra-libs/DataTables/datatables.min.js"></script>
+    <script src="~/dist/js/pages/datatable/datatable-basic.init.js"></script>
+</div>
+<script>
+    $(document).ready(function () {
+        var tblTransactions = $('#tblTransactions').DataTable({
+            createdRow: function (row, data, dataIndex) {
+                $(row).attr('id', data.id);
+            },
+            "columns": [
+                { "data": "accountNumber" },
+                { "data": "name" },
+                { "data": "date" },
+                { "data": "amount" },
+                { "data": "buttons" }
+            ]
+        });
+    });
+
+</script>

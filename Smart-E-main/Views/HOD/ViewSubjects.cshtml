@@ -1,0 +1,68 @@
+﻿@model IEnumerable<Smart_E.Models.Subject>
+
+<div class="container p-3">
+
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Available Subjects</h2>
+        </div>
+        <div class="col-6 text-right">
+            <a asp-controller="HOD" asp-action="CreateSubject" class="btn btn-outline-primary">Add new Subject</a>
+        </div>
+    </div>
+
+    <br />
+
+    @if (Model.Count() > 0)
+    {
+        <table class="table table-success table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>
+                        Subject Name
+                    </th>
+                   @* <th>
+                        Description
+                    </th>
+                    <th>
+                        Department
+                    </th>*@
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var subject in Model)
+                {
+                    <tr>
+                        <td width="30%">@subject.SubjectName</td>
+                       @* <td width="30%">@subject.Description</td>
+                        <td width="30%">@subject.DeptId</td>*@
+                        <td width="30%">
+                            <div class="w-100 btn-group" role="group">
+                                <a asp-controller="HOD" asp-action="GetUpdate" asp-route-ID="@subject.SubjId" class="btn btn-outline-warning mx-1">Update</a>
+                                <a asp-controller="HOD" asp-action="Delete" asp-route-ID="@subject.SubjId" class="btn btn-outline-danger mx-1">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+
+            </tbody>
+
+
+
+
+        </table>
+
+
+
+    }
+    else
+    {
+        <p>No Subjects added yet.</p>
+    }
+
+
+
+
+</div>

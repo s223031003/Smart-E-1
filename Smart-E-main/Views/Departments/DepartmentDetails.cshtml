@@ -1,0 +1,341 @@
+﻿@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
+
+@model Smart_E.Models.Departments.DepartmentViewModel
+
+@{
+    ViewBag.Title = "Department Details";
+    Layout = "_Layout";
+
+}
+
+@inject IOptions<RequestLocalizationOptions> LocOptions
+
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+
+    var cultureItems = LocOptions.Value.SupportedUICultures
+        .Select(c => new SelectListItem {Value = c.Name, Text = c.DisplayName})
+        .ToList();
+    var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}";
+}
+
+@inject IViewLocalizer _localizer
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="~/assets/libs/magnific-popup/dist/magnific-popup.css" rel="stylesheet">
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet">
+    <link href="~/assets/libs/footable/css/footable.core.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/select2/dist/css/select2.min.css">
+    <link href="~/assets/libs/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.4.0/min/dropzone.min.css"/>
+    <link rel="stylesheet" type="text/css" href="~/assets/libs/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
+    
+    
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+<body>
+
+<div class="preloader">
+    <div class="lds-ripple">
+        <div class="lds-pos"></div>
+        <div class="lds-pos"></div>
+    </div>
+</div>
+
+<div class="page-breadcrumb">
+    <div class="row">
+        <div class="col-5 align-self-center">
+            <h4 class="page-title">@_localizer[@Model.DepartmentName]</h4>
+            <div class="d-flex align-items-center">
+            </div>
+        </div>
+        <div class="col-7 align-self-center">
+            <div class="d-flex no-block justify-content-end align-items-center">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a asp-controller="Departments" asp-action="Departments">@_localizer["All Departments"]</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">@_localizer[@Model.DepartmentName]</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+                
+<div class="container-fluid">
+    <div class="row">
+        <button type="button" onclick="javascript:selectSubjectModal();" style="margin-left: 5px;" class="btn btn-sm btn-success float-lg-left"><i class="fas fa-plus"><span> Add Subject</span></i></button>
+
+    </div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tblSubjects" class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th style="width: 160px;">@_localizer["Name"]</th>
+                                <th style="width: 50px"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <tfoot>
+                            <tr>
+                                <th>@_localizer["Name"]</th>
+                                <th></th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="addSubjectModal" class="modal fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none; min-width: calc(100vw - 500px); min-height: calc(100vh - 200px);">
+    <div class="modal-dialog" style="min-width: calc(100vw - 500px); min-height: calc(100vh - 200px);">
+        <div class="modal-content" style="min-width: calc(100vw - 500px); min-height: calc(100vh - 200px);">
+            <div class="modal-header">
+                <h4 class="modal-title">ADD SUBJECT</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-12 col-lg-12">
+                        <div class="form-group">
+                            <div class="table-responsive">
+                                <table id="allSubjectTable" style="width: 100%;" class="table v-middle">
+                                    <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th style="width: 120px; -ms-column-width: 120px; -webkit-column-width: 120px; column-width: 120px;"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+
+
+</body>
+<div>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker-custom.js"></script>
+    <script src="~/assets/extra-libs/DataTables/datatables.min.js"></script>
+    <script src="~/dist/js/pages/datatable/datatable-basic.init.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.min.js"></script>
+    <script src="~/dist/js/pages/forms/select2/select2.init.js"></script>
+    <script src="~/assets/libs/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="~/assets/libs/sweetalert2/sweet-alert.init.js"></script>
+    <script src="~/assets/libs/moment/moment.js"></script>
+    <script src="~/assets/libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+</div>
+
+<script>
+    $(document).ready(function() {
+        loadSubjects();
+    });
+    
+
+    function selectSubjectModal(){
+        
+        $('#addSubjectModal').modal('show');   
+        loadAllSubject();
+    }
+
+    var tblSubjects = $('#tblSubjects').DataTable({
+        createdRow: function(row, data, dataIndex) {
+            $(row).attr('id', data.id);
+        },
+        "columns": [
+            { "data": "name" },
+            { "data": "buttons" }
+        ]
+    });
+    
+    var allSubjects = $('#allSubjectTable').DataTable({
+        createdRow: function(row, data, dataIndex) {
+            $(row).attr('id', data.id);
+        },
+        "columns": [
+            { "data": "subject" },
+            { "data": "buttons" }
+        ]
+    });
+
+    function deleteSubject(id){
+         swal({
+            title: "CONFIRM",
+            text: "Are you sure that you want to reove this subject from this department?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, remove subject!"
+        }).then((ok) => {
+
+            if (JSON.stringify(ok) === '{"value":true}') {
+                $.ajax({
+                    url: `@Url.Action("DeleteSubjectFromDepartment", "Departments")?id=${id}`,
+                    type: 'DELETE',
+                    success: function(result) {
+
+                        toastr.success('Success', 'Subject has been removed');
+                        
+                        location.reload();
+
+
+                    },
+                    error: function(jqXHR, exception) {
+                        swal({
+                            type: "error",
+                            title: "ERROR STATUS " + jqXHR.status,
+                            text: "Error Message: " + jqXHR.responseText,
+                            showCancelButton: false,
+                            confirmButtonText: "OK"
+                        });
+                    }
+                });
+            }
+
+        });
+         
+    
+    }
+    
+    function loadSubjects() {
+        $.ajax({
+            url: `@Url.Action("GetSubjectDepartment", "Departments")?id=@Model.Id`,
+            type: 'GET',
+            success: function(result) {
+
+                var rows = [];
+
+                for (var i = 0; i < result.length; i++) {
+
+                    rows.push({
+                        id: result[i].id,
+                        name: result[i].subjectName,
+                        buttons: `<div><button type="button" class="btn btn-sm btn-outline-danger waves-effect waves-light align-content-end float-lg-right"
+                                 onclick="deleteSubject('${result[i].id}')"
+                                 style="margin-right: 3px" data-toggle="tooltip" data-original-title="View">
+                                 <span><i class="fas fa-close" aria-hidden="true"></i> Delete</span>
+                                 </button></div>`
+                    });
+
+                }
+
+                tblSubjects.rows.add(rows).draw();
+
+            },
+            error: function(jqXHR, exception) {
+                swal({
+                    title: "ERROR STATUS " + jqXHR.status,
+                    text: "Error Message: " + jqXHR.responseText,
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "OK"
+                });
+            }
+        });
+    }
+     function loadAllSubject() {
+        $.ajax({
+            url: `@Url.Action("GetAllSubjects", "Departments")`,
+            type: 'GET',
+            success: function(result) {
+
+                var rows = [];
+
+                for (var i = 0; i < result.length; i++) {
+
+                    rows.push({
+                        subjectId: result[i].subjectId,
+                        subject: result[i].subject,
+                        buttons: `<div><button type="button" class="btn btn-sm btn-outline-success waves-effect waves-light align-content-end float-lg-right"
+                                 onclick="addSubject('${result[i].subjectId}')"
+                                 style="margin-right: 3px" data-toggle="tooltip" data-original-title="View">
+                                 <span><i class="fas fa-plus" aria-hidden="true"></i> Select</span>
+                                 </button></div>`
+                    });
+
+                }
+
+                allSubjects.rows.add(rows).draw();
+
+            },
+            error: function(jqXHR, exception) {
+                swal({
+                    title: "ERROR STATUS " + jqXHR.status,
+                    text: "Error Message: " + jqXHR.responseText,
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "OK"
+                });
+            }
+        });
+    }
+    
+    function addSubject(subjectId) {
+            $.ajax({
+                url: `@Url.Action("AddSubjectToDepartment", "Departments")?id=@Model.Id&subjectId=${subjectId}`,
+                type: 'POST',
+                success: function(result) {
+
+                    location.reload();
+
+                },
+                error: function(jqXHR, exception) {
+
+                    Swal.fire({
+                        title: "ERROR STATUS " + jqXHR.status,
+                        text: "Error Message: " + jqXHR.responseText,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonText: "OK"
+                    });
+                }
+            });
+        }
+</script>

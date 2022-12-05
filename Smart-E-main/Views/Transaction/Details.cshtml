@@ -1,0 +1,53 @@
+﻿@model Smart_E.Models.TransactionsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>View Transaction</h2>
+
+<div>
+    <h4>Details</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.AccountNumber)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AccountNumber)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.AccountOwner)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.AccountOwner)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BankName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BankName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CVV)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CVV)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Amount)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Amount)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Date)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+    </dl>
+</div>
+<div>
+     <a asp-action="Transactions" class="btn btn-block btn-outline-info">Go Back</a>
+</div>

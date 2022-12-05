@@ -1,0 +1,116 @@
+﻿@model Smart_E.Models.TransactionsModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="col-12">
+    <h4 class="text-center">Make a Transaction</h4>
+</div>
+<hr />
+<div class="row">
+    <div class="col-lg-6 mx-auto">
+        <div class="card ">
+            <div class="card-header">
+                <div class="bg-white shadow-sm pt-4 pl-2 pr-2 pb-2">
+
+                    <!-- Credit card form content -->
+                    <div class="tab-content">
+                        <!-- credit card info-->
+                        <div id="credit-card" class="tab-pane fade show active pt-3">
+                            <form asp-action="Create">
+                                <input hidden asp-for="Date" class="form-control" />
+                                <div class="form-group">
+                                    <label asp-for="AccountNumber" class="control-label">Account Number</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text" style="border: 1px solid #5A5A5A">#</div>
+                                        </div>
+                                        <input asp-for="AccountNumber" class="form-control" style="border: 1px solid #5A5A5A" />
+                                    </div>
+                                    <span asp-validation-for="AccountNumber" class="text-danger"></span>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label asp-for="AccountOwner" class="control-label"></label>
+                                            <input asp-for="AccountOwner" class="form-control" style="border: 1px solid #5A5A5A" />
+                                            <span asp-validation-for="AccountOwner" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label asp-for="BankName" class="control-label"></label>
+                                            <input asp-for="BankName" class="form-control" style="border: 1px solid #5A5A5A" />
+                                            <span asp-validation-for="BankName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="col-sm-4">
+                                            <div class="form-group mb-4">
+                                                <label data-toggle="tooltip" title="Three digit CV code on the back of your card">
+                                                    <h6>CVV <i class="fa fa-question-circle d-inline"></i></h6>
+                                                </label> <input asp-for="CVV" type="text" required class="form-control" style="border: 1px solid #5A5A5A">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Amount" class="control-label"></label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text" style="border: 1px solid #5A5A5A">
+                                                    <i class="fas fa-dollar-sign"></i>
+                                                </div>
+                                            </div>
+                                            <input asp-for="Amount" class="form-control" style="border: 1px solid #5A5A5A" />
+                                        </div>
+                                        <span asp-validation-for="Amount" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="card-footer"> <button type="submit" class="subscribe btn btn-outline-success btn-block shadow-sm"> Confirm Payment </button></div>
+                            </form>
+                        </div>
+                    </div> <!-- End -->
+
+
+                </div> <!-- End -->
+                <!-- End -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: #f5f5f5
+    }
+
+    .rounded {
+        border-radius: 1rem
+    }
+
+    .nav-pills.nav-link {
+        color: #555
+    }
+
+        .nav-pills.nav-link.active {
+            color: white
+        }
+
+    input[type = "radio"] {
+        margin-right: 5px
+    }
+
+    .bold {
+        font-weight: bold
+    }
+</style>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+

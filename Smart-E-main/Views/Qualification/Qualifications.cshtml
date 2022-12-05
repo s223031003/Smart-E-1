@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Smart_E.Data.Qualifications>
+
+@{
+    ViewData["Title"] = "Qualifications";
+}
+
+<h2 class="text-center">List of Qualifications</h2> 
+
+<p>
+   
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.QualificationType)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SchoolName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.YearAchieved)
+        </th>
+        @*<th>
+            <a asp-action="Create" class="btn btn-primary text-white">Add New Record</a>
+        </th>*@
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.QualificationType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SchoolName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.YearAchieved)
+            </td>
+        @*<td>
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info text-white">View Qualification</a> 
+            </td>*@
+        </tr>
+    }
+    </tbody>
+</table>
